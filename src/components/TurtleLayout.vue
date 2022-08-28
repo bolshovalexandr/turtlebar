@@ -2,7 +2,7 @@
 	<div class="wrapper">
 		<div class="wrapper__content">
 			<header class="header">
-				<a href="#"><img class="header__logo" src="@/assets/logo.png" alt="" /></a>
+				<a href="#" @click="openContentBlock"><img class="header__logo" src="@/assets/logo.png" alt="" /></a>
 				<h1 class="header__title">Бар "Черепаха-облепиха"</h1>
 				<nav class="header__nav">
 					<ul class="nav">
@@ -55,7 +55,7 @@
 						<button @click="popupCloseHandler">Совсем закрыть</button>
 					</template>
 				</PopupComponent>
-				<ContentBlock :isShown="isContentBlockShown" />
+				<ContentBlock :isShown="isContentBlockShown" @close="onContentBlockClose" ref="ContentBlock" />
 			</div>
 		</div>
 	</div>
@@ -77,6 +77,12 @@ export default defineComponent({
 		};
 	},
 	methods: {
+		openContentBlock() {
+			this.isContentBlockShown = true;
+		},
+		onContentBlockClose() {
+			this.isContentBlockShown = false;
+		},
 		onPopupCloseByDarkLayer() {
 			console.log((this.$refs.popup as InstanceType<typeof PopupComponent>).onPopupClose);
 			this.isOpen = false;

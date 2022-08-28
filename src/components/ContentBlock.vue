@@ -1,34 +1,29 @@
-<template>
-	<article class="popup" @click.stop v-if="isOpen">
-		<header>
-			<a href="#"><img class="header__logo" src="@/assets/logo.png" alt="" /></a>
-		</header>
-		<div class="popup__content"><slot name="content">Story is under construction </slot></div>
-		<div class="popup__buttons">
-			<slot name="buttons" :popupCloseHandler="onPopupClose"><button @click="onPopupClose">Закрыть</button></slot>
-		</div>
-	</article>
-</template>
-
-<script lang="ts">
+<script lang="tsx">
 import { defineComponent, onMounted, onUnmounted, PropType } from 'vue';
+import SvgIconCross from './svg/SvgIconCross.vue';
+import Logo from '@/assets/logo.png';
+
+const IconCross: any = SvgIconCross;
 
 export default defineComponent({
 	name: 'ContentBlock',
+	components: {
+		SvgIconCross
+	},
 	props: {
-		isOpen: { type: Boolean as PropType<boolean>, required: true }
+		isShown: { type: Boolean as PropType<boolean>, required: true }
 	},
 	emits: {
-		'popup-close': null
+		close: null
 	},
-	setup(_props, ctx) {
-		function onPopupClose() {
-			ctx.emit('popup-close', null);
+	setup(props, ctx) {
+		function contentBlockCloseHandler() {
+			ctx.emit('close', null);
 		}
 
 		function onDocumentKeydown(e: KeyboardEvent) {
 			if (e.key === 'Escape') {
-				onPopupClose;
+				contentBlockCloseHandler;
 			}
 		}
 
@@ -40,18 +35,24 @@ export default defineComponent({
 			document.removeEventListener('keydown', onDocumentKeydown);
 		});
 
-		return {
-			onPopupClose
-		};
+		return () => (
+			<article class="wrapper" v-show={props.isShown}>
+				<nav class="wrapper__nav">
+					<a href="#">
+						<img src={Logo} alt="" />
+					</a>
+				</nav>
+				<section class="wrapper__content"></section>
+				<IconCross class="wrapper__close" onClick={contentBlockCloseHandler} />
+			</article>
+		);
 	}
 });
 </script>
 
 <style lang="scss" scoped>
-.popup {
+.wrapper {
 	display: flex;
-	justify-content: center;
-	align-items: center;
 	position: fixed;
 	top: 0;
 	bottom: 0;
@@ -59,5 +60,11 @@ export default defineComponent({
 	left: 0;
 	padding: 8px 16px;
 	background-color: #fff;
+}
+.close {
+	position: absolute;
+	top: 36px;
+	right: 36px;
+	cursor: pointer;
 }
 </style>

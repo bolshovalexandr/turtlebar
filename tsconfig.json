@@ -27,6 +27,7 @@
       "scripthost"
     ]
   },
+	"files": ["shims.d.ts"],
   "include": [
     "src/**/*.ts",
     "src/**/*.tsx",
