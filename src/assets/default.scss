@@ -1,7 +1,18 @@
+$HeroAvatarWidth: 48px;
+$HeroTooltipWidth: 240px;
+$TurtleGreen: #097435;
+$TurtleOrange: #ff8800;
+$Black: #191e27;
+$Gray: #ccd3e5;
+$LightGray: #ebeef5;
+$DarkGray: #a3a9b8;
+$White: #ffffff;
+
 * {
 	font-family: 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', Arial, sans-serif;
 	font-weight: normal;
 	line-height: 1.5;
+	color: #191E27;
 }
 
 pre {

@@ -1,6 +1,6 @@
 <template>
-	<div class="wrapper">
-		<div class="wrapper__content">
+	<div class="turtle-layout">
+		<div class="turtle-layout__content">
 			<header class="header">
 				<a href="#" @click="openContentBlock"><img class="header__logo" src="@/assets/logo.png" alt="" /></a>
 				<h1 class="header__title">Бар "Черепаха-облепиха"</h1>
@@ -55,14 +55,14 @@
 						<button @click="popupCloseHandler">Совсем закрыть</button>
 					</template>
 				</PopupComponent>
-				<ContentBlock :isShown="isContentBlockShown" @close="onContentBlockClose" ref="ContentBlock" />
 			</div>
 		</div>
+		<ContentBlock :isShown="isContentBlockShown" @close="onContentBlockClose" ref="ContentBlock" />
 	</div>
 </template>
 
 <script lang="ts">
-import { defineComponent, ref } from 'vue';
+import { defineComponent } from 'vue';
 import PopupComponent from './PopupComponent.vue';
 import ContentBlock from './ContentBlock.vue';
 import SvgIconMap from './svg/SvgIconMap.vue';
@@ -93,19 +93,10 @@ export default defineComponent({
 </script>
 
 <style lang="scss" scoped>
-$HeroAvatarWidth: 48px;
-$HeroTooltipWidth: 240px;
-$TurtleGreen: #097435;
-$TurtleOrange: #ff8800;
-$Black: #191e27;
-$Grey: #ccd3e5;
-$DarkGrey: #a3a9b8;
-$White: #ffffff;
-
 .map {
 	position: relative;
 }
-.wrapper {
+.turtle-layout {
 	display: flex;
 	justify-content: center;
 	&__content {
@@ -145,7 +136,7 @@ $White: #ffffff;
 		color: $Black;
 		transition: color 0.3s;
 		&:hover {
-			color: $DarkGrey;
+			color: $DarkGray;
 		}
 	}
 }
@@ -174,7 +165,7 @@ $White: #ffffff;
 		background-color: $White;
 		border-radius: 4px;
 		padding: 8px 12px;
-		box-shadow: 0px 0px 8px 0px $DarkGrey;
+		box-shadow: 0px 0px 8px 0px $DarkGray;
 		visibility: hidden;
 		transition: all 0.35s ease-in;
 		z-index: 1;
@@ -188,7 +179,7 @@ $White: #ffffff;
 			top: -8px;
 
 			transform: rotate(135deg);
-			box-shadow: 1px -1px 0px 2px $White, -1px 1px 4px 0px $DarkGrey;
+			box-shadow: 1px -1px 0px 2px $White, -1px 1px 4px 0px $DarkGray;
 			z-index: 1;
 			background: linear-gradient(45deg, $White 50%, transparent 50%, transparent 0%);
 		}
