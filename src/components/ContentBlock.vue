@@ -1,16 +1,13 @@
 <script lang="tsx">
-import { defineComponent, nextTick, onMounted, onUnmounted, PropType, ref, watch } from 'vue';
+import { defineComponent, nextTick, onMounted, onUnmounted, PropType, ref, VNode, watch } from 'vue';
+import Logo from '@/assets/logo.png';
 import SvgIconCross from './svg/SvgIconCross.vue';
 import SvgIconChevronDown from './svg/SvgIconChevronDown.vue';
-import Logo from '@/assets/logo.png';
-
+import ContentNavBlock from './ContentNavBlock.vue';
 import HistoryData from '@/data/history';
 
 export default defineComponent({
 	name: 'ContentBlock',
-	components: {
-		SvgIconCross
-	},
 	props: {
 		isShown: { type: Boolean as PropType<boolean>, required: true }
 	},
@@ -18,15 +15,20 @@ export default defineComponent({
 		close: null
 	},
 	setup(props, ctx) {
-		let isHistoryOpen = ref(false);
-		let navBlock = ref<HTMLDivElement>();
-		let navBlockHeight = ref('0px');
-		let currentSection = ref<keyof typeof HistoryData>('li');
+		const isHistoryOpen = ref(false);
+		const navBlock = ref<HTMLDivElement>();
+		const navBlockHeight = ref('0px');
+		const currentSection = ref<keyof typeof HistoryData | null>(null);
+		const navigation = {
+			pavel: 'Кот Павел',
+			vyp: 'Большая Выпь',
+			li: 'Доктор Ли',
+			irukka: 'Ирюкка'
+		};
 
 		const contentBlockCloseHandler = () => {
 			ctx.emit('close', null);
 		};
-
 		const onDocumentKeydown = (e: KeyboardEvent) => {
 			if (e.key === 'Escape') {
 				contentBlockCloseHandler();
@@ -62,9 +64,11 @@ export default defineComponent({
 			}
 		);
 
-		const onChevronClick = () => (isHistoryOpen.value = !isHistoryOpen.value);
+		const onHistoryItemClick = (name: keyof typeof navigation) => {
+			currentSection.value = name;
+		};
 
-		return () => (
+		return (): VNode => (
 			<article class="content-block" v-show={props.isShown}>
 				<header class="content-block__header">
 					<a href="#" class="">
@@ -76,29 +80,7 @@ export default defineComponent({
 				<div class="content-block__main">
 					<nav class="content-block__nav">
 						<div class="nav">
-							<div
-								class={{
-									nav__header: true,
-									'nav__header--active': isHistoryOpen.value
-								}}
-								onClick={onChevronClick}
-							>
-								<h3>Истории</h3>
-								<SvgIconChevronDown />
-							</div>
-							<ul
-								ref={navBlock}
-								style={{ maxHeight: navBlockHeight.value }}
-								class={{
-									nav__block: true,
-									'nav__block--hidden': !isHistoryOpen.value
-								}}
-							>
-								<li class="nav__item">Кот Павел</li>
-								<li class="nav__item">Большая Выпь</li>
-								<li class="nav__item">Доктор Ли</li>
-								<li class="nav__item">Ирюкка</li>
-							</ul>
+							<ContentNavBlock title="Истории" navigation={navigation} onNavItemClick={() => console.log('Hi')} />
 						</div>
 						<h3 class="nav__header">Персонажи</h3>
 						<ul class="nav__block">
@@ -115,7 +97,22 @@ export default defineComponent({
 						</ul>
 					</nav>
 
-					<section class="content-block__content">{HistoryData[currentSection.value]}</section>
+					<section class="content-block__content">
+						{currentSection.value === null && <span>Выбери себе</span>}
+						{currentSection.value !== null && (
+							<>
+								<h2>{HistoryData[currentSection.value].header}</h2>
+								{HistoryData[currentSection.value].content.map(({ header, text }) => {
+									return (
+										<>
+											<h3>{header}</h3>
+											<p>{text}</p>
+										</>
+									);
+								})}
+							</>
+						)}
+					</section>
 				</div>
 			</article>
 		);
@@ -154,54 +151,6 @@ export default defineComponent({
 	&__close {
 		margin-left: auto;
 		cursor: pointer;
-	}
-}
-
-.nav {
-	width: 200px;
-	margin-bottom: 16px;
-	&__header {
-		display: flex;
-		align-items: center;
-		justify-content: space-between;
-		margin-bottom: 12px;
-		font-size: 24px;
-		cursor: pointer;
-		h3 {
-			color: $DarkGray;
-			transition: color 0.35s;
-		}
-		svg {
-			transition: transform 0.35s;
-		}
-
-		&--active {
-			h3 {
-				color: $TurtleGreen;
-			}
-			svg {
-				transform: rotate(180deg);
-			}
-		}
-	}
-	&__block {
-		margin-left: 36px;
-		font-size: 18px;
-		list-style: none;
-		overflow: hidden;
-		transition: max-height 0.35s;
-		&--hidden {
-			max-height: 0 !important;
-		}
-	}
-	&__item {
-		margin-bottom: 12px;
-		color: $Black;
-		transition: color 0.3s;
-		cursor: pointer;
-		&:hover {
-			color: $TurtleOrange;
-		}
 	}
 }
 </style>
