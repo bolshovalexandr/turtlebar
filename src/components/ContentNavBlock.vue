@@ -2,71 +2,74 @@
 import { defineComponent, onMounted, onUnmounted, PropType, ref, VNode } from 'vue';
 import SvgIconChevronDown from './svg/SvgIconChevronDown.vue';
 
-export default defineComponent({
-	props: {
-		title: { type: Object as PropType<string>, required: true },
-		navigation: { type: Object as PropType<{ [k: string]: string }>, required: true },
-		onNavItemClick: Function as PropType<() => string>
-	},
-	emits: {
-		navItemClick(payload: string) {
-			return Boolean(payload.length);
-		}
-	},
-	setup(props, ctx) {
-		const isBlockOpen = ref(false);
-		const navBlock = ref<HTMLElement | null>(null);
-		const navBlockHeight = ref('0px');
-
-		const onChevronClick = () => (isBlockOpen.value = !isBlockOpen.value);
-		const getNavBlockHeight = () => {
-			if (!navBlock.value?.children) {
-				return '0px';
+export default function <T extends string>() {
+	return defineComponent({
+		props: {
+			title: { type: String as PropType<string>, required: true },
+			navigation: { type: Object as PropType<{ [K in T]: string }>, required: true },
+			onNavItemClick: Function as PropType<<T>(name: T) => void>
+		},
+		emits: {
+			navItemClick(payload: T) {
+				return Boolean(payload);
 			}
-			navBlockHeight.value =
-				[...navBlock.value?.children].reduce((acc, el) => acc + el.getBoundingClientRect().height, 0) + 'px';
-		};
-		onMounted(() => {
-			getNavBlockHeight();
-			document.addEventListener('resize', getNavBlockHeight);
-		});
-		onUnmounted(() => {
-			document.removeEventListener('resize', getNavBlockHeight);
-		});
+		},
+		setup(props, ctx) {
+			const isBlockOpen = ref(false);
+			const navBlock = ref<HTMLElement | null>(null);
+			const navBlockHeight = ref('0px');
+			const onChevronClick = () => (isBlockOpen.value = !isBlockOpen.value);
+			const getNavBlockHeight = () => {
+				if (!navBlock.value?.children) {
+					return '0px';
+				}
+				navBlockHeight.value =
+					[...navBlock.value?.children].reduce((acc, el) => acc + el.getBoundingClientRect().height, 0) + 'px';
+			};
+			onMounted(() => {
+				getNavBlockHeight();
+				window.addEventListener('resize', getNavBlockHeight);
+			});
+			onUnmounted(() => {
+				window.removeEventListener('resize', getNavBlockHeight);
+			});
 
-		return (): VNode => (
-			<div class="nav">
-				<div
-					class={{
-						nav__header: true,
-						'nav__header--active': isBlockOpen.value
-					}}
-					onClick={onChevronClick}
-				>
-					<h3>{props.title}</h3>
-					<SvgIconChevronDown />
+			return (): VNode => (
+				<div class="nav">
+					<div
+						class={{
+							nav__header: true,
+							'nav__header--active': isBlockOpen.value
+						}}
+						onClick={onChevronClick}
+					>
+						<h3>{props.title}</h3>
+						<SvgIconChevronDown />
+					</div>
+					<ul
+						ref={navBlock}
+						style={{ maxHeight: navBlockHeight.value }}
+						class={{
+							nav__block: true,
+							'nav__block--hidden': !isBlockOpen.value
+						}}
+					>
+						{Object.keys(props.navigation).map((key) => {
+							return (
+								<li class="nav__item" onClick={() => ctx.emit('navItemClick', key)}>
+									{props.navigation[key]}
+								</li>
+							);
+						})}
+					</ul>
 				</div>
-				<ul
-					ref={navBlock}
-					style={{ maxHeight: navBlockHeight.value }}
-					class={{
-						nav__block: true,
-						'nav__block--hidden': !isBlockOpen.value
-					}}
-				>
-					{Object.keys(props.navigation).map((key) => (
-						<li class="nav__item" onClick={() => ctx.emit('navItemClick', key)}>
-							{props.navigation[key]}
-						</li>
-					))}
-				</ul>
-			</div>
-		);
-	}
-});
+			);
+		}
+	});
+}
 </script>
 
-<style lang="scss">
+<style lang="scss" scoped>
 .nav {
 	width: 200px;
 	margin-bottom: 16px;

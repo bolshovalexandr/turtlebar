@@ -57,7 +57,7 @@
 				</PopupComponent>
 			</div>
 		</div>
-		<ContentBlock :isShown="isContentBlockShown" @close="onContentBlockClose" ref="ContentBlock" />
+		<ContentBlock v-if="isContentBlockShown" @close="onContentBlockClose" ref="ContentBlock" />
 	</div>
 </template>
 
