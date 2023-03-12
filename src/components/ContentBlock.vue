@@ -2,7 +2,7 @@
 import { defineComponent, onMounted, onUnmounted, ref, VNode } from 'vue';
 import Logo from '@/assets/logo.png';
 import SvgIconCross from './svg/SvgIconCross.vue';
-import ContentNavBlockFn from './ContentNavBlock.vue';
+import ContentNavBlock from './ContentNavBlock.vue';
 import HistoryData from '@/data/history';
 
 export default defineComponent({
@@ -12,10 +12,9 @@ export default defineComponent({
 	},
 	setup(props, ctx) {
 		type IHistoryDataKeys = keyof typeof HistoryData;
-		const ContentNavBlockHistory = ContentNavBlockFn<IHistoryDataKeys>();
 
 		const currentSection = ref<IHistoryDataKeys | null>(null);
-		const navigation: { [k in IHistoryDataKeys]: string } = {
+		const navigationHistory: { [k in IHistoryDataKeys]: string } = {
 			pavel: 'Кот Павел',
 			vyp: 'Большая Выпь',
 			li: 'Доктор Ли',
@@ -39,8 +38,10 @@ export default defineComponent({
 			document.removeEventListener('keydown', onDocumentKeydown);
 		});
 
-		const onHistoryItemClick = (name: IHistoryDataKeys) => {
-			currentSection.value = name;
+		const onHistoryItemClick = (name: string) => {
+			if (Object.keys(HistoryData).includes(name)) {
+				currentSection.value = name as IHistoryDataKeys;
+			}
 		};
 
 		return (): VNode => (
@@ -55,7 +56,7 @@ export default defineComponent({
 				<div class="content-block__main">
 					<nav class="content-block__nav">
 						<div class="nav">
-							<ContentNavBlockHistory title="Истории" navigation={navigation} onNavItemClick={onHistoryItemClick} />
+							<ContentNavBlock title="Истории" navigation={navigationHistory} onNavItemClick={onHistoryItemClick} />
 						</div>
 						<h3 class="nav__header">Персонажи</h3>
 						<ul class="nav__block">
@@ -75,11 +76,11 @@ export default defineComponent({
 					<section class="content-block__content">
 						{currentSection.value !== null ? (
 							<>
-								<h2>{HistoryData[currentSection.value].header}</h2>
-								{HistoryData[currentSection.value].content.map(({ header, text }) => {
+								<h2>{HistoryData[currentSection.value].header as string}</h2>
+								{HistoryData[currentSection.value].content.map(({ subject, text }) => {
 									return (
 										<>
-											<h3>{header}</h3>
+											<h3>{subject}</h3>
 											<p>{text}</p>
 										</>
 									);
